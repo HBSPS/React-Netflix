@@ -39,7 +39,7 @@ const Items = styled.ul`
 
 const Item = styled.li`
   margin-right: 20px;
-  color: ${(props) => props.theme.white.darker};
+  color: ${(props) => props.theme.white.lighter};
   transition: color 0.3s ease-in-out;
   position: relative;
   display: flex;
@@ -47,7 +47,7 @@ const Item = styled.li`
   flex-direction: column;
 
   &:hover {
-    color: ${(props) => props.theme.white.lighter};
+    color: ${(props) => props.theme.white.darker};
   }
 `;
 
@@ -162,7 +162,7 @@ function Header() {
             </Col>
             <Col>
                 <Search>
-                    <motion.svg onClick={toggleSearch} animate={{x: searchOpen ? -185 : 0}} transition={{type: "linear"}} fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/motion.">
+                    <motion.svg onClick={toggleSearch} animate={{x: searchOpen ? -180 : 0}} transition={{type: "linear"}} fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/motion.">
                         <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd"></path>
                     </motion.svg>
                     <Input animate={inputAnimation} initial={{scaleX: 0}} transition={{type: "linear"}} placeholder="Title, People. Genres" />
