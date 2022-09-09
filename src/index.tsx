@@ -61,8 +61,9 @@ table {
 body {
   font-weight: 300;
   font-family: 'Nunito', sans-serif;
-  color:black;
+  color: ${(props) => props.theme.white.darker};
   line-height: 1.2;
+  background-color: black;
 }
 a {
   text-decoration:none;

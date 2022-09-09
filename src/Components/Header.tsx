@@ -13,6 +13,7 @@ const Nav = styled(motion.div)`
   font-size: 14px;
   padding: 20px 60px;
   color: white;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0));
 `;
 
 const Col = styled.div`
@@ -45,6 +46,7 @@ const Item = styled.li`
   display: flex;
   justify-content: center;
   flex-direction: column;
+  font-size: 15px;
 
   &:hover {
     color: ${(props) => props.theme.white.darker};
@@ -103,13 +105,13 @@ const navVariants = {
     top: {
         backgroundColor: "rgba(0, 0, 0, 0)",
         transition: {
-            duration: 0.15
+            duration: 0.1
         }
     },
     scroll: {
         backgroundColor: "rgba(0, 0, 0, 1)",
         transition: {
-            duration: 0.15
+            duration: 0.1
         }
     }
 };
