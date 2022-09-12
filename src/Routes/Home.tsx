@@ -229,9 +229,9 @@ function Home() {
         if (popular) {
             if (leavingPop) return;
             setLeavingPop(true);
-            const totalMovies = popular.results.length - 1;
-            const maxIndex = Math.floor(totalMovies / offset) - 1;
-            setIndexPop((prev) => prev === maxIndex ? 0 : prev + 1);
+            const totalMovies = popular.results.length;
+            const maxIndex1 = Math.floor(totalMovies / offset) - 1;
+            setIndexPop((prev) => prev === maxIndex1 ? 0 : prev + 1);
         };
     };
     const toggleLeavingPop = () => setLeavingPop((prev) => !prev);
@@ -240,12 +240,12 @@ function Home() {
         if (upComming) {
             if (leavingComming) return;
             setLeavingComming(true);
-            const totalMovies = upComming.results.length - 1;
-            const maxIndex = Math.floor(totalMovies / offset) - 1;
-            setIndexComming((prev) => prev === maxIndex ? 0 : prev + 1);
+            const totalMovies = upComming.results.length;
+            const maxIndex2 = Math.floor(totalMovies / offset) - 1;
+            setIndexComming((prev) => prev === maxIndex2 ? 0 : prev + 1);
         };
     };
-    const toggleLeavingComming = () => setLeavingPop((prev) => !prev);
+    const toggleLeavingComming = () => setLeavingComming((prev) => !prev);
 
     // 박스 클릭 시 URL 변경
     const navigate = useNavigate();

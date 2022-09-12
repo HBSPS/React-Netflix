@@ -1,4 +1,4 @@
-const API_KEY = "0320c27e7d01fb585f96df3ae6f48349";
+export const API_KEY = "0320c27e7d01fb585f96df3ae6f48349";
 const BASE_PATH = "https://api.themoviedb.org/3";
 
 interface IMovie {
@@ -57,6 +57,10 @@ export async function getPopularMovies() {
  * [URL] https://api.themoviedb.org/3/search/multi?api_key=<<api_key>>&language=ko&query={keyword}
  * params: keyword
  */
+export async function searchResults(query: string) {
+    const response = await fetch(`${BASE_PATH}/search/multi?api_key=${API_KEY}&language=ko&query=${query}&include_adult=true`);
+    return await response.json();
+};
 
 /**
  * TV 정보 받아오기 최신

@@ -229,9 +229,9 @@ function Tv() {
         if (popular) {
             if (leavingPop) return;
             setLeavingPop(true);
-            const totalMovies = popular.results.length - 1;
-            const maxIndex = Math.floor(totalMovies / offset) - 1;
-            setIndexPop((prev) => prev === maxIndex ? 0 : prev + 1);
+            const totalMovies = popular.results.length;
+            const maxIndex1 = Math.floor(totalMovies / offset) - 1;
+            setIndexPop((prev) => prev === maxIndex1 ? 0 : prev + 1);
         };
     };
     const toggleLeavingPop = () => setLeavingPop((prev) => !prev);
@@ -240,12 +240,12 @@ function Tv() {
         if (upComming) {
             if (leavingComming) return;
             setLeavingComming(true);
-            const totalMovies = upComming.results.length - 1;
-            const maxIndex = Math.floor(totalMovies / offset) - 1;
-            setIndexComming((prev) => prev === maxIndex ? 0 : prev + 1);
+            const totalMovies = upComming.results.length;
+            const maxIndex2 = Math.floor(totalMovies / offset) - 1;
+            setIndexComming((prev) => prev === maxIndex2 ? 0 : prev + 1);
         };
     };
-    const toggleLeavingComming = () => setLeavingPop((prev) => !prev);
+    const toggleLeavingComming = () => setLeavingComming((prev) => !prev);
 
     // 박스 클릭 시 URL 변경
     const navigate = useNavigate();
@@ -295,10 +295,10 @@ function Tv() {
                         <AnimatePresence key="Popular" initial={false} onExitComplete={toggleLeavingPop}>
                             <Category>인기 방영작</Category>
                             <Row variants={rowVariants} initial="hidden" animate="visible" exit="exit" transition={{type: "tween", duration: 1}} key={indexPop + 200}>
-                                {popular?.results.slice(1).slice(offset * indexPop, offset * indexPop + offset).map((movie) =>
+                                {popular?.results.slice(offset * indexPop, offset * indexPop + offset).map((movie) =>
                                     <Box layoutId={movie.id+"2"} onClick={() => onBoxClick(movie.id)} key={movie.id+"20"} bgphoto={makeImagePath(movie.backdrop_path, "w400")} variants={boxVariants} transition={{ type: "tween" }} initial="normal" whileHover="hover">
                                         <Info variants={infoVariants}>
-                                            <h4>{movie.title}</h4>
+                                            <h4>{movie.name}</h4>
                                         </Info>
                                     </Box>
                                 )}
@@ -310,10 +310,10 @@ function Tv() {
                         <AnimatePresence key="Top" initial={false} onExitComplete={toggleLeavingComming}>
                             <Category>높은 평점</Category>
                             <Row variants={rowVariants} initial="hidden" animate="visible" exit="exit" transition={{type: "tween", duration: 1}} key={indexComming + 300}>
-                                {upComming?.results.slice(1).slice(offset * indexComming, offset * indexComming + offset).map((movie) =>
+                                {upComming?.results.slice(offset * indexComming, offset * indexComming + offset).map((movie) =>
                                     <Box layoutId={movie.id+"3"} onClick={() => onBoxClick(movie.id)} key={movie.id+"30"} bgphoto={makeImagePath(movie.backdrop_path, "w400")} variants={boxVariants} transition={{ type: "tween" }} initial="normal" whileHover="hover">
                                         <Info variants={infoVariants}>
-                                            <h4>{movie.title}</h4>
+                                            <h4>{movie.name}</h4>
                                         </Info>
                                     </Box>
                                 )}
