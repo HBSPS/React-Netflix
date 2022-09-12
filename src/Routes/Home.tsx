@@ -3,7 +3,7 @@ import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion"
 import { useState } from "react";
 import { useMatch, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { getMovies, IGetMoviesResult } from "../api";
+import { getMovies, getPopularMovies, getUpcommingMovies, IGetMoviesResult } from "../api";
 import { makeImagePath } from "../utils";
 
 const Wrapper = styled.div`
@@ -30,6 +30,7 @@ const Banner = styled.div<{ bgphoto: string }>`
 const Title = styled.h2`
     font-size: 80px;
     margin-bottom: 20px;
+    position: relative;
 `;
 
 const Overview = styled.p`
@@ -40,6 +41,16 @@ const Overview = styled.p`
 const Slider = styled.div`
     position: relative;
     top: -100px;
+    display: block;
+    margin-bottom: 200px;
+`;
+
+const Category = styled.span`
+    font-size: 30px;
+    font-weight: bold;
+    padding-left: 60px;
+    margin-bottom: 20px;
+    display: block;
 `;
 
 const Row = styled(motion.div)`
@@ -56,7 +67,7 @@ const Box = styled(motion.div) <{ bgphoto: string }>`
     background-image: url(${(props) => props.bgphoto});
     background-size: cover;
     background-position: center center;
-    height: 200px;
+    height: 150px;
     cursor: pointer;
 
     &:first-child {
@@ -87,7 +98,8 @@ const Info = styled(motion.div)`
 
     h4 {
         text-align: center;
-        font-size: 18px;
+        font-size: 15px;
+        font-weight: bold;
     }
 `;
 
@@ -122,8 +134,32 @@ const BigTitle = styled.h3`
 const BigOverview = styled.p`
     padding: 20px;
     color: ${(props) => props.theme.white.lighter};
-    position: relative;
-    top: -85px;
+`;
+
+const BigRate = styled.span`
+    font-size: 20px;
+    font-weight: bold;
+    padding: 20px;
+`;
+
+const Next = styled.div`
+    background-color: rgba(0, 0, 0, 0.5);
+    height: 150px;
+    width: 50px;
+    position: absolute;
+    right: 60px;
+    z-index: 99;
+    transition: background-color .5s linear;
+    font-size: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    cursor: pointer;
+
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.8);
+    }
 `;
 
 const rowVariants = {
@@ -164,28 +200,52 @@ const infoVariants = {
     }
 };
 
-interface IForm {
-    keyword: string;
-};
-
 const offset = 6;
 
 function Home() {
-    const { data, isLoading } = useQuery<IGetMoviesResult>(["movies", "nowPlaying"], getMovies);
-    const [index, setIndex] = useState(0);
+    const { data: now, isLoading: nowIsLoading } = useQuery<IGetMoviesResult>(["movies", "nowPlaying"], getMovies);
+    const { data: popular, isLoading: popularIsLoading } = useQuery<IGetMoviesResult>(["popular", "popularMovies"], getPopularMovies);
+    const { data: upComming, isLoading: upCommingIsLoading } = useQuery<IGetMoviesResult>(["upComming", "upCommingMovies"], getUpcommingMovies);
+    const [indexNow, setIndexNow] = useState(0);
+    const [indexPop, setIndexPop] = useState(0);
+    const [indexComming, setIndexComming] = useState(0);
     const [leaving, setLeaving] = useState(false);
-
+    const [leavingPop, setLeavingPop] = useState(false);
+    const [leavingComming, setLeavingComming] = useState(false);
+    
     // 슬라이더 인덱스 증가
-    const increaseIndex = () => {
-        if (data) {
+    const increaseIndexNow = () => {
+        if (now) {
             if (leaving) return;
             setLeaving(true);
-            const totalMovies = data.results.length - 1;
+            const totalMovies = now.results.length - 1;
             const maxIndex = Math.floor(totalMovies / offset) - 1;
-            setIndex((prev) => prev === maxIndex ? 0 : prev + 1);
+            setIndexNow((prev) => prev === maxIndex ? 0 : prev + 1);
         };
     };
-    const toggleLeaving = () => setLeaving((prev) => !prev);
+    const toggleLeavingNow = () => setLeaving((prev) => !prev);
+
+    const increaseIndexPop = () => {
+        if (popular) {
+            if (leavingPop) return;
+            setLeavingPop(true);
+            const totalMovies = popular.results.length - 1;
+            const maxIndex = Math.floor(totalMovies / offset) - 1;
+            setIndexPop((prev) => prev === maxIndex ? 0 : prev + 1);
+        };
+    };
+    const toggleLeavingPop = () => setLeavingPop((prev) => !prev);
+
+    const increaseIndexComming = () => {
+        if (upComming) {
+            if (leavingComming) return;
+            setLeavingComming(true);
+            const totalMovies = upComming.results.length - 1;
+            const maxIndex = Math.floor(totalMovies / offset) - 1;
+            setIndexComming((prev) => prev === maxIndex ? 0 : prev + 1);
+        };
+    };
+    const toggleLeavingComming = () => setLeavingPop((prev) => !prev);
 
     // 박스 클릭 시 URL 변경
     const navigate = useNavigate();
@@ -206,27 +266,59 @@ function Home() {
     const setScrollY = useTransform(scrollY, (value) => value + 100);
 
     // 클릭한 영화 상세정보 받아오기
-    const clickedMovie = bigMovieMatch?.params.id && data?.results.find((movie) => movie.id === Number(bigMovieMatch.params.id));
+    const clickedMovie = bigMovieMatch?.params.id && (now?.results.find((movie) => movie.id === Number(bigMovieMatch.params.id)) || popular?.results.find((movie) => movie.id === Number(bigMovieMatch.params.id)) || upComming?.results.find((movie) => movie.id === Number(bigMovieMatch.params.id)));
 
     return (
         <Wrapper>
-            {isLoading ? <Loader>Loading...</Loader>
+            {nowIsLoading ? <Loader>Loading...</Loader>
                 : <>
-                    <Banner bgphoto={makeImagePath(data?.results[0].backdrop_path || "")} onClick={increaseIndex}>
-                        <Title>{data?.results[0].title}</Title>
-                        <Overview>{data?.results[0].overview}</Overview>
+                    <Banner bgphoto={makeImagePath(now?.results[0].backdrop_path || "")}>
+                        <Title>{now?.results[0].title}</Title>
+                        <Overview>{now?.results[0].overview}</Overview>
                     </Banner>
                     <Slider>
-                        <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
-                            <Row variants={rowVariants} initial="hidden" animate="visible" exit="exit" transition={{type: "tween", duration: 1}} key={index}>
-                                {data?.results.slice(1).slice(offset * index, offset * index + offset).map(movie =>
-                                    <Box layoutId={movie.id+""} onClick={() => onBoxClick(movie.id)} key={movie.id} bgphoto={makeImagePath(movie.backdrop_path, "w400")} variants={boxVariants} transition={{ type: "tween" }} initial="normal" whileHover="hover">
+                        <AnimatePresence key="Now" initial={false} onExitComplete={toggleLeavingNow}>
+                            <Category>지금 상영 중</Category>
+                            <Row variants={rowVariants} initial="hidden" animate="visible" exit="exit" transition={{type: "tween", duration: 1}} key={indexNow + 100}>
+                                {now?.results.slice(1).slice(offset * indexNow, offset * indexNow + offset).map((movie) =>
+                                    <Box layoutId={movie.id+"1"} onClick={() => onBoxClick(movie.id)} key={movie.id+"10"} bgphoto={makeImagePath(movie.backdrop_path, "w400")} variants={boxVariants} transition={{ type: "tween" }} initial="normal" whileHover="hover">
                                         <Info variants={infoVariants}>
                                             <h4>{movie.title}</h4>
                                         </Info>
                                     </Box>
                                 )}
                             </Row>
+                            <Next onClick={increaseIndexNow}>&gt;</Next>
+                        </AnimatePresence>
+                    </Slider>
+                    <Slider>
+                        <AnimatePresence key="Popular" initial={false} onExitComplete={toggleLeavingPop}>
+                            <Category>인기 상영작</Category>
+                            <Row variants={rowVariants} initial="hidden" animate="visible" exit="exit" transition={{type: "tween", duration: 1}} key={indexPop + 200}>
+                                {popular?.results.slice(1).slice(offset * indexPop, offset * indexPop + offset).map((movie) =>
+                                    <Box layoutId={movie.id+"2"} onClick={() => onBoxClick(movie.id)} key={movie.id+"20"} bgphoto={makeImagePath(movie.backdrop_path, "w400")} variants={boxVariants} transition={{ type: "tween" }} initial="normal" whileHover="hover">
+                                        <Info variants={infoVariants}>
+                                            <h4>{movie.title}</h4>
+                                        </Info>
+                                    </Box>
+                                )}
+                            </Row>
+                            <Next onClick={increaseIndexPop}>&gt;</Next>
+                        </AnimatePresence>
+                    </Slider>
+                    <Slider>
+                        <AnimatePresence key="Upcoming" initial={false} onExitComplete={toggleLeavingComming}>
+                            <Category>개봉 예정작</Category>
+                            <Row variants={rowVariants} initial="hidden" animate="visible" exit="exit" transition={{type: "tween", duration: 1}} key={indexComming + 300}>
+                                {upComming?.results.slice(1).slice(offset * indexComming, offset * indexComming + offset).map((movie) =>
+                                    <Box layoutId={movie.id+"3"} onClick={() => onBoxClick(movie.id)} key={movie.id+"30"} bgphoto={makeImagePath(movie.backdrop_path, "w400")} variants={boxVariants} transition={{ type: "tween" }} initial="normal" whileHover="hover">
+                                        <Info variants={infoVariants}>
+                                            <h4>{movie.title}</h4>
+                                        </Info>
+                                    </Box>
+                                )}
+                            </Row>
+                            <Next onClick={increaseIndexComming}>&gt;</Next>
                         </AnimatePresence>
                     </Slider>
                     <AnimatePresence>
@@ -239,6 +331,7 @@ function Home() {
                                             <>
                                                 <BigCover style={{backgroundImage: `linear-gradient(to top, black, transparent), url(${makeImagePath(clickedMovie.backdrop_path, "w500")})`}} />
                                                 <BigTitle>{clickedMovie.title}</BigTitle>
+                                                <BigRate>⭐{clickedMovie.vote_average}</BigRate>
                                                 <BigOverview>{clickedMovie.overview}</BigOverview>
                                             </>
                                         )}

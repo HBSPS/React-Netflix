@@ -7,6 +7,7 @@ interface IMovie {
     poster_path: string;
     title: string;
     overview: string;
+    vote_average: number;
 };
     
 export interface IGetMoviesResult {
@@ -22,6 +23,24 @@ export interface IGetMoviesResult {
 
 export async function getMovies() {
     const response = await fetch(`${BASE_PATH}/movie/now_playing?api_key=${API_KEY}&language=ko`);
+    return await response.json();
+};
+
+/**
+ * 인기 영화
+ * [URL] https://api.themoviedb.org/3/movie/popular?api_key=<<api_key>>&language=ko
+ */
+export async function getPopularMovies() {
+    const response = await fetch(`${BASE_PATH}/movie/popular?api_key=${API_KEY}&language=ko`);
+    return await response.json();
+};
+
+/**
+ * 개봉 예정 영화
+ * [URL] https://api.themoviedb.org/3/movie/upcoming?api_key=0320c27e7d01fb585f96df3ae6f48349&language=ko
+ */
+ export async function getUpcommingMovies() {
+    const response = await fetch(`${BASE_PATH}/movie/upcoming?api_key=${API_KEY}&language=ko`);
     return await response.json();
 };
 
