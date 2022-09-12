@@ -8,6 +8,7 @@ interface IMovie {
     title: string;
     overview: string;
     vote_average: number;
+    name: string
 };
     
 export interface IGetMoviesResult {
@@ -56,3 +57,30 @@ export async function getPopularMovies() {
  * [URL] https://api.themoviedb.org/3/search/multi?api_key=<<api_key>>&language=ko&query={keyword}
  * params: keyword
  */
+
+/**
+ * TV 정보 받아오기 최신
+ * [URL] https://api.themoviedb.org/3/tv/latest?api_key=0320c27e7d01fb585f96df3ae6f48349&language=ko
+ */
+ export async function getTVShows() {
+    const response = await fetch(`${BASE_PATH}/tv/on_the_air?api_key=${API_KEY}&language=ko`);
+    return await response.json();
+};
+
+/**
+ * 인기 TV
+ * [URL] https://api.themoviedb.org/3/tv/popular?api_key=<<api_key>>&language=ko
+ */
+ export async function getPopularTV() {
+    const response = await fetch(`${BASE_PATH}/tv/popular?api_key=${API_KEY}&language=ko`);
+    return await response.json();
+};
+
+/**
+ * 높은 평점 TV
+ * [URL] https://api.themoviedb.org/3/tv/top_rated?api_key=<<api_key>>&language=ko
+ */
+ export async function getTopTV() {
+    const response = await fetch(`${BASE_PATH}/tv/top_rated?api_key=${API_KEY}&language=ko`);
+    return await response.json();
+};

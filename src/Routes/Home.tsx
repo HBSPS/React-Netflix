@@ -204,8 +204,8 @@ const offset = 6;
 
 function Home() {
     const { data: now, isLoading: nowIsLoading } = useQuery<IGetMoviesResult>(["movies", "nowPlaying"], getMovies);
-    const { data: popular, isLoading: popularIsLoading } = useQuery<IGetMoviesResult>(["popular", "popularMovies"], getPopularMovies);
-    const { data: upComming, isLoading: upCommingIsLoading } = useQuery<IGetMoviesResult>(["upComming", "upCommingMovies"], getUpcommingMovies);
+    const { data: popular } = useQuery<IGetMoviesResult>(["popular", "popularMovies"], getPopularMovies);
+    const { data: upComming } = useQuery<IGetMoviesResult>(["upComming", "upCommingMovies"], getUpcommingMovies);
     const [indexNow, setIndexNow] = useState(0);
     const [indexPop, setIndexPop] = useState(0);
     const [indexComming, setIndexComming] = useState(0);
