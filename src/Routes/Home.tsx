@@ -47,6 +47,7 @@ const Row = styled(motion.div)`
     grid-template-columns: repeat(6, 1fr);
     position: absolute;
     width: 100%;
+    padding: 0 60px;
 `;
 
 const Box = styled(motion.div) <{ bgPhoto: string }>`
@@ -56,6 +57,14 @@ const Box = styled(motion.div) <{ bgPhoto: string }>`
     background-position: center center;
     height: 200px;
     color: red;
+
+    &:first-child {
+        transform-origin: center left;
+    }
+
+    &:last-child {
+        transform-origin: center right;
+    }
 `;
 
 const rowVariants = {
@@ -67,6 +76,21 @@ const rowVariants = {
     },
     exit: {
         x: -window.outerWidth - 5
+    }
+};
+
+const boxVariants = {
+    normal: {
+        scale: 1
+    },
+    hover: {
+        scale: 1.3,
+        y: -50,
+        transition: {
+            delay: 0.5,
+            duration: 0.3,
+            type: "tween"
+        }
     }
 };
 
@@ -97,7 +121,7 @@ function Home() {
                     <Slider>
                         <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
                             <Row variants={rowVariants} initial="hidden" animate="visible" exit="exit" transition={{type: "tween", duration: 1}} key={index}>
-                                {data?.results.slice(1).slice(offset * index, offset * index + offset).map(movie => <Box key={movie.id} bgPhoto={makeImagePath(movie.backdrop_path, "w400")} />)}
+                                {data?.results.slice(1).slice(offset * index, offset * index + offset).map(movie => <Box key={movie.id} bgPhoto={makeImagePath(movie.backdrop_path, "w400")} variants={boxVariants} transition={{type: "tween"}} initial="normal" whileHover="hover" />)}
                             </Row>
                         </AnimatePresence>
                     </Slider>

@@ -41,6 +41,13 @@ body {
   line-height: 1;
   overflow-x: hidden;
 }
+body {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera*/
+}
 menu, ol, ul {
   list-style: none;
 }
