@@ -164,6 +164,10 @@ const infoVariants = {
     }
 };
 
+interface IForm {
+    keyword: string;
+};
+
 const offset = 6;
 
 function Home() {

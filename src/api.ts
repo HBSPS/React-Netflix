@@ -31,3 +31,9 @@ export async function getMovies() {
  * [URL] https://api.themoviedb.org/3/movie/{movie_id}?api_key=<<api_key>>&language=ko
  * params: movieId
  */
+
+/**
+ * 검색 결과 받아오기 (멀티서치)
+ * [URL] https://api.themoviedb.org/3/search/multi?api_key=<<api_key>>&language=ko&query={keyword}
+ * params: keyword
+ */

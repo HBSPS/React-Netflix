@@ -1,5 +1,6 @@
-import { Link, useMatch } from "react-router-dom";
+import { Link, useMatch, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { useForm } from "react-hook-form";
 import { motion, useAnimation, useScroll } from "framer-motion";
 import { useEffect, useState } from "react";
 
@@ -65,7 +66,7 @@ const Circle = styled(motion.span)`
     margin: 0 auto;
 `;
 
-const Search = styled.span`
+const Search = styled.form`
   color: white;
   display: flex;
   align-items: center;
@@ -116,6 +117,10 @@ const navVariants = {
     }
 };
 
+interface IForm {
+    keyword: string;
+};
+
 function Header() {
     const [searchOpen, setSearchOpen] = useState(false);
 
@@ -147,6 +152,14 @@ function Header() {
 
     const homeMatch = useMatch("/");
     const tvMatch = useMatch("tv");
+
+    // 검색 후 Search 페이지 이동
+    const navigate = useNavigate();
+    const { register, handleSubmit } = useForm<IForm>();
+    const onValid = (data: IForm) => {
+        navigate(`/search?keyword=${data.keyword}`);
+    };
+
     return (
         <Nav animate={navAnimation} variants={navVariants} initial="top">
             <Col>
@@ -163,11 +176,11 @@ function Header() {
                 </Items>
             </Col>
             <Col>
-                <Search>
+                <Search onSubmit={handleSubmit(onValid)}>
                     <motion.svg onClick={toggleSearch} animate={{x: searchOpen ? -180 : 0}} transition={{type: "linear"}} fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/motion.">
                         <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd"></path>
                     </motion.svg>
-                    <Input animate={inputAnimation} initial={{scaleX: 0}} transition={{type: "linear"}} placeholder="Title, People. Genres" />
+                    <Input {...register("keyword", {required: true, minLength: 2})} animate={inputAnimation} initial={{scaleX: 0}} transition={{type: "linear"}} placeholder="Title, People. Genres" />
                 </Search>
             </Col>
         </Nav>
