@@ -95,10 +95,35 @@ const BigMovieInfo = styled(motion.div)`
     position: absolute;
     width: 40vw;
     height: 80vh;
-    background-color: red;
     left: 0;
     right: 0;
     margin: 0 auto;
+    background-color: ${(props) => props.theme.black.lighter};
+    border-radius: 15px;
+    overflow: hidden;
+`;
+
+const BigCover = styled.div`
+    width: 100%;
+    background-size: cover;
+    background-position: center center;
+    height: 400px;
+`;
+
+const BigTitle = styled.h3`
+    color: ${(props) => props.theme.white.lighter};
+    font-size: 40px;
+    font-weight: bold;
+    position: relative;
+    top: -85px;
+    padding: 20px;
+`;
+
+const BigOverview = styled.p`
+    padding: 20px;
+    color: ${(props) => props.theme.white.lighter};
+    position: relative;
+    top: -85px;
 `;
 
 const rowVariants = {
@@ -145,6 +170,7 @@ function Home() {
     const { data, isLoading } = useQuery<IGetMoviesResult>(["movies", "nowPlaying"], getMovies);
     const [index, setIndex] = useState(0);
     const [leaving, setLeaving] = useState(false);
+
     // 슬라이더 인덱스 증가
     const increaseIndex = () => {
         if (data) {
@@ -175,6 +201,9 @@ function Home() {
     const { scrollY } = useScroll();
     const setScrollY = useTransform(scrollY, (value) => value + 100);
 
+    // 클릭한 영화 상세정보 받아오기
+    const clickedMovie = bigMovieMatch?.params.id && data?.results.find((movie) => movie.id === Number(bigMovieMatch.params.id));
+
     return (
         <Wrapper>
             {isLoading ? <Loader>Loading...</Loader>
@@ -201,7 +230,15 @@ function Home() {
                             ? (
                                 <>
                                     <Overlay onClick={onOverlayClick} animate={{opacity: 1}} exit={{opacity: 0}} />
-                                    <BigMovieInfo layoutId={bigMovieMatch.params.id} style={{ top: setScrollY }}/>
+                                    <BigMovieInfo layoutId={bigMovieMatch.params.id} style={{ top: setScrollY }}>
+                                        {clickedMovie && (
+                                            <>
+                                                <BigCover style={{backgroundImage: `linear-gradient(to top, black, transparent), url(${makeImagePath(clickedMovie.backdrop_path, "w500")})`}} />
+                                                <BigTitle>{clickedMovie.title}</BigTitle>
+                                                <BigOverview>{clickedMovie.overview}</BigOverview>
+                                            </>
+                                        )}
+                                    </BigMovieInfo>
                                 </>
                             ) : null
                         }

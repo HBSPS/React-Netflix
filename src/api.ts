@@ -24,3 +24,10 @@ export async function getMovies() {
     const response = await fetch(`${BASE_PATH}/movie/now_playing?api_key=${API_KEY}&language=ko`);
     return await response.json();
 };
+
+/*
+ * 영화 상세정보 받아오기
+ * [GET] /movie/{movie_id}
+ * [URL] https://api.themoviedb.org/3/movie/{movie_id}?api_key=<<api_key>>&language=ko
+ * params: movieId
+ */
