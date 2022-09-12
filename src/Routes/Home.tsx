@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
+import { useMatch, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { getMovies, IGetMoviesResult } from "../api";
 import { makeImagePath } from "../utils";
@@ -16,13 +17,13 @@ const Loader = styled.div`
     align-items: center;
 `;
 
-const Banner = styled.div<{ bgPhoto: string }>`
+const Banner = styled.div<{ bgphoto: string }>`
     height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     padding: 60px;
-    background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)), url(${(props) => props.bgPhoto});
+    background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)), url(${(props) => props.bgphoto});
     background-size: cover;
 `;
 
@@ -50,12 +51,13 @@ const Row = styled(motion.div)`
     padding: 0 60px;
 `;
 
-const Box = styled(motion.div) <{ bgPhoto: string }>`
+const Box = styled(motion.div) <{ bgphoto: string }>`
     background-color: white;
-    background-image: url(${(props) => props.bgPhoto});
+    background-image: url(${(props) => props.bgphoto});
     background-size: cover;
     background-position: center center;
     height: 200px;
+    cursor: pointer;
 
     &:first-child {
         transform-origin: center left;
@@ -124,6 +126,7 @@ function Home() {
     const { data, isLoading } = useQuery<IGetMoviesResult>(["movies", "nowPlaying"], getMovies);
     const [index, setIndex] = useState(0);
     const [leaving, setLeaving] = useState(false);
+    // 슬라이더 인덱스 증가
     const increaseIndex = () => {
         if (data) {
             if (leaving) return;
@@ -134,11 +137,21 @@ function Home() {
         };
     };
     const toggleLeaving = () => setLeaving((prev) => !prev);
+
+    // 박스 클릭 시 URL 변경
+    const navigate = useNavigate();
+    const onBoxClick = (movieId: number) => {
+        navigate(`/movies/${movieId}`);
+    };
+
+    // 현재 URL 일치 여부 확인
+    const bigMovieMatch = useMatch("/movies/:id");
+
     return (
         <Wrapper>
             {isLoading ? <Loader>Loading...</Loader>
                 : <>
-                    <Banner bgPhoto={makeImagePath(data?.results[0].backdrop_path || "")} onClick={increaseIndex}>
+                    <Banner bgphoto={makeImagePath(data?.results[0].backdrop_path || "")} onClick={increaseIndex}>
                         <Title>{data?.results[0].title}</Title>
                         <Overview>{data?.results[0].overview}</Overview>
                     </Banner>
@@ -146,7 +159,7 @@ function Home() {
                         <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
                             <Row variants={rowVariants} initial="hidden" animate="visible" exit="exit" transition={{type: "tween", duration: 1}} key={index}>
                                 {data?.results.slice(1).slice(offset * index, offset * index + offset).map(movie =>
-                                    <Box key={movie.id} bgPhoto={makeImagePath(movie.backdrop_path, "w400")} variants={boxVariants} transition={{ type: "tween" }} initial="normal" whileHover="hover">
+                                    <Box layoutId={movie.id+""} onClick={() => onBoxClick(movie.id)} key={movie.id} bgphoto={makeImagePath(movie.backdrop_path, "w400")} variants={boxVariants} transition={{ type: "tween" }} initial="normal" whileHover="hover">
                                         <Info variants={infoVariants}>
                                             <h4>{movie.title}</h4>
                                         </Info>
@@ -155,6 +168,12 @@ function Home() {
                             </Row>
                         </AnimatePresence>
                     </Slider>
+                    <AnimatePresence>
+                        {bigMovieMatch
+                            ? <motion.div layoutId={bigMovieMatch.params.id} style={{ position: "absolute", width: "40vw", height: "80vh", backgroundColor: "red", top: 50, left: 0, right: 0, margin: "0 auto" }} />
+                            : null
+                        }
+                    </AnimatePresence>
                 </>}
         </Wrapper>
     );
